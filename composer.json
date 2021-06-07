@@ -1,0 +1,25 @@
+{
+    "name": "sbovyrin/repo",
+    "description": "Language to talk with your repository",
+    "keywords": ["yii2", "database query", "query builder"],
+    "type": "library",
+    "require": {
+        "php": ">=7.4.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sergey Bovyrin",
+            "email": "sbovyrin@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "sbovyrin\\": "src/"
+        }   
+    },
+    "require": {
+        "yiisoft/yii2": "~2.0.14"
+    },
+    "minimum-stability": "dev"
+}
