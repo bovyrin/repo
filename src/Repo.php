@@ -133,6 +133,18 @@ class Repo
         ];
     }
 
+    static function pattern(string $k, string $v): callable
+    {
+        $v = str_replace('*', '%', $v);
+
+        return static fn (string $a): array => [
+            'like',
+            join('.', [$a, $k]),
+            $v,
+            false
+        ];
+    }
+
     static function sortBy(callable $f): callable
     {
         return static fn (Query $q): Query => $q->orderBy($f());
