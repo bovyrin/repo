@@ -11,13 +11,13 @@ use yii\db\Migration;
 
 class Repo
 {
-    static function toList(Query $q): array
+    static function vals(Query $q): array
     {
         $q->params = [];
         return $q->all();
     }
 
-    static function name($name): Query
+    static function get(string $name): Query
     {
         return (new Query)
             ->from("{{%{$name}}} {$name}")
@@ -38,21 +38,24 @@ class Repo
         };
     }
 
-    static function pick(array $paths): callable
+    static function select(array $cols): callable
     {
         return static fn (Query $q): Query => $q->addSelect(
             array_merge(
                 ...array_map(
                     static fn ($v, $k) => [$k => "{$q->params['name']}.{$v}"],
-                    $paths,
-                    array_keys($paths)
+                    $cols,
+                    array_keys($cols)
                 )
             )
         );
     }
 
-    static function intersect(array $glue, Query $q1): callable
+    static function unionBy(array $glue, Query $q1): callable
     {
+        if (count($glue) < 2)
+            throw new \TypeError('Arg1 expected [q1_key, q2_key]');
+
         return static function (Query $q2) use ($glue, $q1): Query {
             $q1->innerJoin(
                 $q2->from[0],
@@ -150,10 +153,10 @@ class Repo
         return static fn (Query $q): Query => $q->orderBy($f());
     }
 
-    static function slice(int $n1, int $n2 = null): callable
+    static function slice(int $limit, int $offset = null): callable
     {
         return static fn (Query $q): Query =>
-            $q->offset($n1 === 0 ? null : $n1)->limit($n2);
+            $q->limit($limit)->offset($offset);
     }
 
     static function len(Query $q): int
@@ -227,6 +230,11 @@ class Repo
         return Yii::$app->db->transaction($f);
     }
 
+    static function toSql(Query $q): string
+    {
+        return $q->createCommand()->getRawSql();
+    }
+
     static function init(string $name, array $schema): bool
     {
         $migration = new Migration();
@@ -264,7 +272,7 @@ class Repo
         };
 
         try {
-            self::len(self::name($name));
+            self::len(self::get($name));
         } catch (\Throwable $e) {
             $migration->createTable(
                 "{{%{$name}}}",
