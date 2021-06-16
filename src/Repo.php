@@ -212,6 +212,11 @@ class Repo
         return static fn ($xs) => $exec($toSql($xs));
     }
 
+    static function isQuery($q): bool
+    {
+        return $q instanceof Query;
+    }
+
     static function delete(Query $q): int
     {
         $toSql = static fn () => Yii::$app->db->createCommand()
@@ -225,9 +230,12 @@ class Repo
         return $exec($toSql());
     }
 
-    static function atomic(callable $f)
+    static function atomic(callable $f): callable
     {
-        return Yii::$app->db->transaction($f);
+        return static fn (...$xs) =>
+            Yii::$app->db->transaction(
+                static fn () => $f(...$xs)
+            );
     }
 
     static function toSql(Query $q): string
