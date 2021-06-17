@@ -246,7 +246,6 @@ class Repo
     static function init(string $name, array $schema): bool
     {
         $migration = new Migration();
-        $schema = constant($schema);
 
         $fns = [
             'type' => [
@@ -290,8 +289,8 @@ class Repo
                     ['id' => $migration->primaryKey()]
                 )
             );
-
-            return true;
         }
+
+        return true;
     }
 }
