@@ -161,6 +161,7 @@ class Repo
 
     static function len(Query $q): int
     {
+        $q->params = [];
         return (int) $q->count(1);
     }
 
