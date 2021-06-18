@@ -82,7 +82,7 @@ class Repo
         return static fn () => ['or', $x, ...$xn];
     }
 
-    static function has(string $k, array $v): callable
+    static function has(string $k, $v): callable
     {
         return static fn (string $a): array => [
             'in',
