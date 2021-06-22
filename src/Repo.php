@@ -66,7 +66,11 @@ class Repo
 
             if (!empty($q2->where)) $q1->andWhere($q2->where);
 
-            if (!empty($q2->join)) $q1->join(...$q2->join[0]);
+            if (!empty($q2->join)) {
+                foreach ($q2->join as $x) {
+                    $q1->join(...$x);
+                }
+            }
 
             return $q1;
         };
